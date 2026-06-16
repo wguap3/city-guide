@@ -89,13 +89,13 @@ java -jar target/city-guide-1.0.0.jar
 
 | Параметр     | Тип     | Обязательный | По умолчанию | Описание                                     |
 |--------------|---------|:------------:|:------------:|----------------------------------------------|
-| `lat`        | double  | ✅           | —            | Широта пользователя                          |
-| `lon`        | double  | ✅           | —            | Долгота пользователя                         |
-| `radius`     | double  | ✅           | —            | Радиус поиска в км                           |
-| `category`   | string  | ❌           | —            | MUSEUM, PARK, MONUMENT, TEMPLE, GALLERY, … |
-| `minRating`  | double  | ❌           | —            | Минимальная средняя оценка (1–5)             |
-| `maxResults` | int     | ❌           | 10           | Максимум результатов (1–100)                 |
-| `sortBy`     | string  | ❌           | `distance`   | `distance` / `rating` / `name`              |
+| `lat`        | double  |      y       | —            | Широта пользователя                          |
+| `lon`        | double  |      y       | —            | Долгота пользователя                         |
+| `radius`     | double  |      y       | —            | Радиус поиска в км                           |
+| `category`   | string  |      n       | —            | MUSEUM, PARK, MONUMENT, TEMPLE, GALLERY, … |
+| `minRating`  | double  |      n       | —            | Минимальная средняя оценка (1–5)             |
+| `maxResults` | int     |      n       | 10           | Максимум результатов (1–100)                 |
+| `sortBy`     | string  |      n       | `distance`   | `distance` / `rating` / `name`              |
 
 ### Оценки
 
