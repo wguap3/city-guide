@@ -6,8 +6,8 @@ REST API путеводителя по городу — достопримеча
 
 - Java 17, Spring Boot 3.3
 - PostgreSQL 16
-- Liquibase (миграции, формат YAML)
-- MapStruct (маппинг DTO ↔ Entity)
+- Liquibase (миграции)
+- MapStruct (маппинг)
 - Lombok
 - SpringDoc / Swagger UI
 - Docker + Docker Compose
@@ -72,44 +72,6 @@ java -jar target/city-guide-1.0.0.jar
 | `db.changelog-master.yaml`                 | Мастер-файл, подключает остальные |
 | `changesets/001-init-schema.yaml`          | Создание таблиц и индексов       |
 | `changesets/002-seed-data.yaml`            | Тестовые данные (Петербург)      |
-
----
-
-## Структура проекта
-
-```
-src/main/java/com/cityguide/
-├── CityGuideApplication.java       # Точка входа
-├── config/
-│   └── OpenApiConfig.java          # Настройка Swagger
-├── controller/
-│   └── AttractionController.java   # REST-контроллер
-├── dto/                            # Data Transfer Objects
-│   ├── AttractionDto.java
-│   ├── AttractionCreateDto.java
-│   ├── NearbySearchRequest.java
-│   ├── RatingCreateDto.java
-│   ├── ReviewDto.java
-│   └── ReviewCreateDto.java
-├── entity/                         # JPA-сущности
-│   ├── Attraction.java
-│   ├── Category.java               # Enum категорий
-│   └── Review.java
-├── exception/                      # Обработка ошибок
-│   ├── GlobalExceptionHandler.java
-│   └── ResourceNotFoundException.java
-├── mapper/                         # MapStruct-мапперы
-│   ├── AttractionMapper.java
-│   └── ReviewMapper.java
-├── repository/                     # Spring Data JPA
-│   ├── AttractionRepository.java
-│   ├── ReviewRepository.java
-│   └── projection/
-│       └── AttractionNearbyProjection.java
-└── service/
-    ├── AttractionService.java      # Интерфейс сервиса
-    └── AttractionServiceImpl.java  # Реализация
-```
 
 ---
 
