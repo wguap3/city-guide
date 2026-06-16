@@ -1,0 +1,7 @@
+com/cityguide/mapper/AttractionMapperTest.class
+com/cityguide/entity/EntityTest.class
+com/cityguide/service/AttractionServiceImplTest.class
+com/cityguide/exception/ExceptionHandlerTest.class
+com/cityguide/ApplicationContextTest.class
+com/cityguide/mapper/ReviewMapperTest.class
+com/cityguide/controller/AttractionControllerTest.class

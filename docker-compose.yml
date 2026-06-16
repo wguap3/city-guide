@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cityguide-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cityguide
+      POSTGRES_USER: cityguide
+      POSTGRES_PASSWORD: cityguide
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cityguide -d cityguide"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: cityguide-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: cityguide
+      DB_USER: cityguide
+      DB_PASSWORD: cityguide
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

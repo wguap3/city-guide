@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AttractionMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">city-guide</a> &gt; <a href="index.source.html" class="el_package">com.cityguide.mapper</a> &gt; <span class="el_source">AttractionMapperImpl.java</span></div><h1>AttractionMapperImpl.java</h1><pre class="source lang-java linenums">package com.cityguide.mapper;
+
+import com.cityguide.dto.AttractionCreateDto;
+import com.cityguide.dto.AttractionDto;
+import com.cityguide.entity.Attraction;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2026-06-16T17:27:26+0400&quot;,
+    comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 21.0.5 (Amazon.com Inc.)&quot;
+)
+@Component
+<span class="fc" id="L15">public class AttractionMapperImpl implements AttractionMapper {</span>
+
+    @Override
+    public AttractionDto toDto(Attraction attraction) {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        if ( attraction == null ) {</span>
+<span class="fc" id="L20">            return null;</span>
+        }
+
+<span class="fc" id="L23">        AttractionDto attractionDto = new AttractionDto();</span>
+
+<span class="fc" id="L25">        attractionDto.setId( attraction.getId() );</span>
+<span class="fc" id="L26">        attractionDto.setName( attraction.getName() );</span>
+<span class="fc" id="L27">        attractionDto.setCategory( attraction.getCategory() );</span>
+<span class="fc" id="L28">        attractionDto.setLatitude( attraction.getLatitude() );</span>
+<span class="fc" id="L29">        attractionDto.setLongitude( attraction.getLongitude() );</span>
+<span class="fc" id="L30">        attractionDto.setDescription( attraction.getDescription() );</span>
+<span class="fc" id="L31">        attractionDto.setAddress( attraction.getAddress() );</span>
+
+<span class="fc" id="L33">        return attractionDto;</span>
+    }
+
+    @Override
+    public Attraction toEntity(AttractionCreateDto dto) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if ( dto == null ) {</span>
+<span class="fc" id="L39">            return null;</span>
+        }
+
+<span class="fc" id="L42">        Attraction.AttractionBuilder attraction = Attraction.builder();</span>
+
+<span class="fc" id="L44">        attraction.name( dto.getName() );</span>
+<span class="fc" id="L45">        attraction.category( dto.getCategory() );</span>
+<span class="fc" id="L46">        attraction.latitude( dto.getLatitude() );</span>
+<span class="fc" id="L47">        attraction.longitude( dto.getLongitude() );</span>
+<span class="fc" id="L48">        attraction.description( dto.getDescription() );</span>
+<span class="fc" id="L49">        attraction.address( dto.getAddress() );</span>
+
+<span class="fc" id="L51">        return attraction.build();</span>
+    }
+
+    @Override
+    public void updateFromDto(AttractionCreateDto dto, Attraction attraction) {
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if ( dto == null ) {</span>
+<span class="nc" id="L57">            return;</span>
+        }
+
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if ( dto.getName() != null ) {</span>
+<span class="fc" id="L61">            attraction.setName( dto.getName() );</span>
+        }
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if ( dto.getCategory() != null ) {</span>
+<span class="fc" id="L64">            attraction.setCategory( dto.getCategory() );</span>
+        }
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if ( dto.getLatitude() != null ) {</span>
+<span class="fc" id="L67">            attraction.setLatitude( dto.getLatitude() );</span>
+        }
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if ( dto.getLongitude() != null ) {</span>
+<span class="fc" id="L70">            attraction.setLongitude( dto.getLongitude() );</span>
+        }
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if ( dto.getDescription() != null ) {</span>
+<span class="nc" id="L73">            attraction.setDescription( dto.getDescription() );</span>
+        }
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if ( dto.getAddress() != null ) {</span>
+<span class="nc" id="L76">            attraction.setAddress( dto.getAddress() );</span>
+        }
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AttractionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">city-guide</a> &gt; <a href="index.source.html" class="el_package">com.cityguide.service</a> &gt; <span class="el_source">AttractionServiceImpl.java</span></div><h1>AttractionServiceImpl.java</h1><pre class="source lang-java linenums">package com.cityguide.service;
+
+import com.cityguide.dto.*;
+import com.cityguide.entity.Attraction;
+import com.cityguide.entity.Review;
+import com.cityguide.exception.ResourceNotFoundException;
+import com.cityguide.mapper.AttractionMapper;
+import com.cityguide.mapper.ReviewMapper;
+import com.cityguide.repository.AttractionRepository;
+import com.cityguide.repository.ReviewRepository;
+import com.cityguide.repository.projection.AttractionNearbyProjection;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
+
+@Service
+<span class="fc" id="L20">@RequiredArgsConstructor</span>
+@Transactional(readOnly = true)
+public class AttractionServiceImpl implements AttractionService {
+
+    private final AttractionRepository attractionRepository;
+    private final ReviewRepository reviewRepository;
+    private final AttractionMapper attractionMapper;
+    private final ReviewMapper reviewMapper;
+
+    @Override
+    @Transactional
+    public AttractionDto create(AttractionCreateDto dto) {
+<span class="fc" id="L32">        Attraction attraction = attractionMapper.toEntity(dto);</span>
+<span class="fc" id="L33">        attraction = attractionRepository.save(attraction);</span>
+<span class="fc" id="L34">        return enrichDto(attractionMapper.toDto(attraction), attraction.getId());</span>
+    }
+
+    @Override
+    public AttractionDto getById(Long id) {
+<span class="fc" id="L39">        Attraction attraction = attractionRepository.findById(id)</span>
+<span class="fc" id="L40">                .orElseThrow(() -&gt; ResourceNotFoundException.attraction(id));</span>
+<span class="fc" id="L41">        return enrichDto(attractionMapper.toDto(attraction), id);</span>
+    }
+
+    @Override
+    public List&lt;AttractionDto&gt; findNearby(NearbySearchRequest req) {
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        String categoryStr = req.getCategory() != null ? req.getCategory().name() : null;</span>
+
+<span class="fc" id="L48">        List&lt;AttractionNearbyProjection&gt; projections = attractionRepository.findNearby(</span>
+<span class="fc" id="L49">                req.getLat(), req.getLon(), req.getRadius(), categoryStr, req.getMinRating()</span>
+        );
+
+<span class="fc bfc" id="L52" title="All 3 branches covered.">        Comparator&lt;AttractionNearbyProjection&gt; comparator = switch (</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">                req.getSortBy() == null ? &quot;distance&quot; : req.getSortBy().toLowerCase()) {</span>
+<span class="fc" id="L54">            case &quot;rating&quot;   -&gt; Comparator.comparingDouble(</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">                    p -&gt; -(p.getAverageRating() == null ? 0.0 : p.getAverageRating()));</span>
+<span class="fc" id="L56">            case &quot;name&quot;     -&gt; Comparator.comparing(AttractionNearbyProjection::getName,</span>
+                    String.CASE_INSENSITIVE_ORDER);
+<span class="fc" id="L58">            default         -&gt; Comparator.comparingDouble(p -&gt;</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">                    p.getDistanceKm() == null ? Double.MAX_VALUE : p.getDistanceKm());</span>
+        };
+
+<span class="fc" id="L62">        return projections.stream()</span>
+<span class="fc" id="L63">                .sorted(comparator)</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">                .limit(req.getMaxResults() == null ? 10 : req.getMaxResults())</span>
+<span class="fc" id="L65">                .map(this::projectionToDto)</span>
+<span class="fc" id="L66">                .toList();</span>
+    }
+
+    @Override
+    @Transactional
+    public ReviewDto addRating(Long attractionId, RatingCreateDto dto) {
+<span class="fc" id="L72">        Attraction attraction = attractionRepository.findById(attractionId)</span>
+<span class="fc" id="L73">                .orElseThrow(() -&gt; ResourceNotFoundException.attraction(attractionId));</span>
+
+<span class="fc" id="L75">        Review review = Review.builder()</span>
+<span class="fc" id="L76">                .attraction(attraction)</span>
+<span class="fc" id="L77">                .authorName(dto.getAuthorName())</span>
+<span class="fc" id="L78">                .rating(dto.getRating())</span>
+<span class="fc" id="L79">                .build();</span>
+
+<span class="fc" id="L81">        return reviewMapper.toDto(reviewRepository.save(review));</span>
+    }
+
+    @Override
+    @Transactional
+    public ReviewDto addReview(Long attractionId, ReviewCreateDto dto) {
+<span class="pc bpc" id="L87" title="1 of 4 branches missed.">        if (dto.getComment() == null &amp;&amp; dto.getRating() == null) {</span>
+<span class="fc" id="L88">            throw new IllegalArgumentException(&quot;Отзыв должен содержать текст и/или оценку&quot;);</span>
+        }
+
+<span class="fc" id="L91">        Attraction attraction = attractionRepository.findById(attractionId)</span>
+<span class="pc" id="L92">                .orElseThrow(() -&gt; ResourceNotFoundException.attraction(attractionId));</span>
+
+<span class="fc" id="L94">        Review review = reviewMapper.toEntity(dto);</span>
+<span class="fc" id="L95">        review.setAttraction(attraction);</span>
+
+<span class="fc" id="L97">        return reviewMapper.toDto(reviewRepository.save(review));</span>
+    }
+
+    @Override
+    public List&lt;ReviewDto&gt; getReviews(Long attractionId) {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (!attractionRepository.existsById(attractionId)) {</span>
+<span class="fc" id="L103">            throw ResourceNotFoundException.attraction(attractionId);</span>
+        }
+<span class="fc" id="L105">        return reviewRepository.findByAttractionIdOrderByCreatedAtDesc(attractionId)</span>
+<span class="fc" id="L106">                .stream()</span>
+<span class="fc" id="L107">                .map(reviewMapper::toDto)</span>
+<span class="fc" id="L108">                .toList();</span>
+    }
+
+
+    private AttractionDto enrichDto(AttractionDto dto, Long attractionId) {
+<span class="fc" id="L113">        dto.setAverageRating(</span>
+<span class="fc" id="L114">                reviewRepository.findAverageRatingByAttractionId(attractionId).orElse(null));</span>
+<span class="fc" id="L115">        dto.setRatingCount(reviewRepository.countRatingsByAttractionId(attractionId));</span>
+<span class="fc" id="L116">        return dto;</span>
+    }
+
+    private AttractionDto projectionToDto(AttractionNearbyProjection p) {
+<span class="fc" id="L120">        AttractionDto dto = new AttractionDto();</span>
+<span class="fc" id="L121">        dto.setId(p.getId());</span>
+<span class="fc" id="L122">        dto.setName(p.getName());</span>
+<span class="fc" id="L123">        dto.setCategory(com.cityguide.entity.Category.valueOf(p.getCategory()));</span>
+<span class="fc" id="L124">        dto.setLatitude(p.getLatitude());</span>
+<span class="fc" id="L125">        dto.setLongitude(p.getLongitude());</span>
+<span class="fc" id="L126">        dto.setDescription(p.getDescription());</span>
+<span class="fc" id="L127">        dto.setAddress(p.getAddress());</span>
+<span class="pc bpc" id="L128" title="2 of 4 branches missed.">        dto.setAverageRating(p.getAverageRating() != null &amp;&amp; p.getAverageRating() &gt; 0</span>
+<span class="pc" id="L129">                ? p.getAverageRating() : null);</span>
+<span class="fc" id="L130">        dto.setRatingCount(p.getRatingCount());</span>
+<span class="fc" id="L131">        dto.setDistanceKm(p.getDistanceKm());</span>
+<span class="fc" id="L132">        return dto;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,144 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 001-create-attractions
+      author: cityguide
+      comment: Создание таблицы достопримечательностей
+      changes:
+        - createTable:
+            tableName: attractions
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: latitude
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: longitude
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 001-idx-attractions-category
+      author: cityguide
+      comment: Индекс по категории
+      changes:
+        - createIndex:
+            tableName: attractions
+            indexName: idx_attractions_category
+            columns:
+              - column:
+                  name: category
+
+  - changeSet:
+      id: 001-idx-attractions-lat-lon
+      author: cityguide
+      comment: Индекс по координатам
+      changes:
+        - createIndex:
+            tableName: attractions
+            indexName: idx_attractions_lat_lon
+            columns:
+              - column:
+                  name: latitude
+              - column:
+                  name: longitude
+
+  - changeSet:
+      id: 001-create-reviews
+      author: cityguide
+      comment: Создание таблицы отзывов
+      changes:
+        - createTable:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: attraction_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reviews_attraction
+                    references: attractions(id)
+                    deleteCascade: true
+              - column:
+                  name: author_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: INTEGER
+              - column:
+                  name: comment
+                  type: VARCHAR(2000)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-chk-rating-range
+      author: cityguide
+      comment: Проверка диапазона оценки
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE reviews
+              ADD CONSTRAINT chk_rating_range
+              CHECK (rating BETWEEN 1 AND 5);
+
+  - changeSet:
+      id: 001-chk-review-not-empty
+      author: cityguide
+      comment: Отзыв должен содержать оценку или текст
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE reviews
+              ADD CONSTRAINT chk_review_not_empty
+              CHECK (rating IS NOT NULL OR comment IS NOT NULL);
+
+  - changeSet:
+      id: 001-idx-reviews-attraction-id
+      author: cityguide
+      comment: Индекс по attraction_id в таблице отзывов
+      changes:
+        - createIndex:
+            tableName: reviews
+            indexName: idx_reviews_attraction_id
+            columns:
+              - column:
+                  name: attraction_id
